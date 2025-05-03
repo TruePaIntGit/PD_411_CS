@@ -43,6 +43,8 @@ namespace EasyCalculations
                                 c = a / b;
                             }
                             break;
+                        case 'q':
+                            return;
                         default:
                             Console.WriteLine("Нет, такой операции");
                             break;
