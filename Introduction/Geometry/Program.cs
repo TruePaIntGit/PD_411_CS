@@ -41,6 +41,16 @@ namespace Geometry
                 }
             }
         }
+        static string Repeat(string text, int times)
+        {
+            string repeated = "";
+            while (times>0)
+            {
+                repeated += text;
+                times--;
+            }
+            return repeated;
+        }
         static void square_p(int a = 5)
         {
             for (int i = 0; i < a; i++)
@@ -73,15 +83,37 @@ namespace Geometry
             string figure = "\t\t*\r\n\t      * *\r\n\t    * * *\r\n\t  * * * *\r\n\t* * * * *";
             Console.WriteLine(figure);
         }
-        static void rombe_p()
+        static void rombe_p(int size = 10)
         {
-            string figure = "\t    /\\\r\n\t   /  \\\r\n\t  /    \\\r\n\t /      \\\r\n\t/        \\\r\n\t\\        /\r\n\t \\      /\r\n\t  \\    /\r\n\t   \\  /\r\n\t    \\/";
-            Console.WriteLine(figure);
+            for (int i = 0; i<size; i++)
+            {
+                if (i < size/2)
+                {
+                    Console.WriteLine(Repeat(" ", (size / 2) - 1 - i) + '/' + Repeat(" ", (i * 2)) + '\\');
+                }
+                else
+                {
+                    Console.WriteLine(Repeat(" ", i- (size / 2)) + '\\' + Repeat(" ", ((i-size) * -2)-2) + '/');
+                }
+            }
         }
-        static void chests_p() 
+        static void chests_p(int size = 5) 
         {
-            string figure = "\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t* * * * *          * * * * *          * * * * *          * * * * *          \r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *\r\n\t         * * * * *          * * * * *          * * * * *          * * * * *";
-            Console.WriteLine(figure);
+            for (int i = 0; i < 8; i++)
+            {
+                for(int j = 0; j < size; j++)
+                {
+                    if (i%2 == 0)
+                    {
+                        Console.WriteLine(Repeat("* ", size)+Repeat("  ",size)+ Repeat("* ", size) + Repeat("  ", size)+ Repeat("* ", size) + Repeat("  ", size)+ Repeat("* ", size) + Repeat("  ", size));
+                    }
+                    else
+                    {
+                        Console.WriteLine(Repeat("  ", size) + Repeat("* ", size) + Repeat("  ", size) + Repeat("* ", size) + Repeat("  ", size) + Repeat("* ", size) + Repeat("  ", size) + Repeat("* ", size));
+                    }
+                }
+
+            }
         }
     }
 }
