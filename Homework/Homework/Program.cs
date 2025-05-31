@@ -10,6 +10,10 @@ namespace FiguresHierarchyUI
     // Можно будет добавить координаты в него
     public abstract class Figure
     {
+        public const double PI = 3.14;
+        public const double SIN60 = 0.8660254038;
+        public double Square;
+        public double Perimetr;
         public abstract void Draw(Graphics g);
         public abstract string GetInfo();
     }
@@ -24,6 +28,8 @@ namespace FiguresHierarchyUI
         {
             Location = location;
             Side = side;
+            Square = side*side;
+            Perimetr = side*4;
         }
 
         public override void Draw(Graphics g)
@@ -39,7 +45,7 @@ namespace FiguresHierarchyUI
             }
         }
 
-        public override string GetInfo() => $"Квадрат:\n Сторона={Side:F2}";
+        public override string GetInfo() => $"Квадрат:\n Сторона={Side:F2},\n Площадь={Square:F2},\n Периметр={Perimetr:F2}";
     }
 
     // Прямоугольник
@@ -54,6 +60,8 @@ namespace FiguresHierarchyUI
             Location = location;
             Width = width;
             Height = height;
+            Square = width*height;
+            Perimetr = (width+height)*2;
         }
 
         public override void Draw(Graphics g)
@@ -69,7 +77,7 @@ namespace FiguresHierarchyUI
             }
         }
 
-        public override string GetInfo() => $"Прямоугольник:\n Ширина={Width:F2},\n Высота={Height:F2}";
+        public override string GetInfo() => $"Прямоугольник:\n Ширина={Width:F2},\n Высота={Height:F2},\n Площадь={Square:F2},\n Периметр={Perimetr:F2}";
     }
 
     // Круг
@@ -82,6 +90,8 @@ namespace FiguresHierarchyUI
         {
             Location = location;
             Radius = radius;
+            Square = radius*radius* PI;
+            Perimetr = 2 * radius * PI;
         }
 
         public override void Draw(Graphics g)
@@ -97,34 +107,69 @@ namespace FiguresHierarchyUI
             }
         }
 
-        public override string GetInfo() => $"Круг:\n Радиус={Radius:F2}";
+        public override string GetInfo() => $"Круг:\n Радиус={Radius:F2},\n Площадь={Square:F2},\n Периметр={Perimetr:F2}";
     }
-    // Треугольник (равнобедренный)
-    public class Triangle : Figure
+    // Треугольник (абстрактный)
+    public abstract class BaseTriangle : Figure
     {
-        public PointF TopPoint { get; }
-        public double BaseLength { get; }
-        public double Height { get; }
+        public Point P1 { get; }
+        public Point P2 { get; }
+        public Point P3 { get; }
+        public PointF Location { get; }
 
-        public Triangle(PointF topPoint, double baseLength, double height)
+        public BaseTriangle(Point p1, Point p2, Point p3, PointF location)
         {
-            TopPoint = topPoint;
-            BaseLength = baseLength;
-            Height = height;}
+            P1 = p1;
+            P2 = p2;
+            P3 = p3;
+            Location = location;
+        }
         public override void Draw(Graphics g)
         {
-            Point p1 = new Point((int)TopPoint.X, (int)TopPoint.Y);
-            Point p2 = new Point((int)(TopPoint.X - BaseLength / 2), (int)(TopPoint.Y + Height));
-            Point p3 = new Point((int)(TopPoint.X + BaseLength / 2), (int)(TopPoint.Y + Height));
 
-            Point[] points = { p1, p2, p3 };
+            Point[] points = { P1, P2, P3 };
 
             using (Brush brush = new SolidBrush(Color.Purple))
             {
                 g.FillPolygon(brush, points);
             }
         }
-        public override string GetInfo() => $"Треугольник:\n Основание={BaseLength:F2},\n Высота={Height:F2}";
+    }
+
+    // Треугольник (равнобедренный)
+    public class IsoscelesTriangle : BaseTriangle
+    {
+        public double BaseLength { get; }
+        public double Height { get; }
+        public IsoscelesTriangle(PointF location, double baseLength, double height) : base(
+            new Point((int)location.X, (int)location.Y),
+            new Point((int)(location.X - baseLength / 2), (int)(location.Y + height)),
+            new Point((int)(location.X + baseLength / 2), (int)(location.Y + baseLength)),
+            location)
+        {
+            Height = height;
+            BaseLength = baseLength;
+            Square = baseLength * height / 2;
+            Perimetr = Math.Sqrt(height*height+baseLength*baseLength)*2+baseLength;
+        }
+        public override string GetInfo() => $"Треугольник (равнобедренный):\n Стороны={BaseLength:F2},\n Высота={Height:F2},\n Площадь={Square:F2},\n Периметр={Perimetr:F2}";
+    }
+
+    // Треугольник (равносторонний)
+    public class EquilateralTriange : BaseTriangle
+    {
+        public double BaseLength { get; }
+        public EquilateralTriange(PointF location, double baseLength):base(
+            new Point((int)location.X, (int)location.Y),
+            new Point((int)(location.X - (baseLength/2)), (int)(location.Y + SIN60 *baseLength)),
+            new Point((int)(location.X + (baseLength / 2)), (int)(location.Y + SIN60 * baseLength)),
+            location)
+        { 
+            BaseLength = baseLength;
+            Square = Math.Sqrt(3) * baseLength * baseLength / 4;
+            Perimetr = baseLength * 3;
+        }
+        public override string GetInfo() => $"Треугольник (равносторонний):\n Стороны={BaseLength:F2},\n Площадь={Square:F2},\n Периметр={Perimetr:F2}";
     }
 
     // Сама форма
@@ -166,7 +211,7 @@ namespace FiguresHierarchyUI
             labels.Clear();
             for (int i = 0; i < 5; i++)
             {
-                int type = rand.Next(4);
+                int type = rand.Next(5);
                 int x = rand.Next(50, ClientSize.Width - 100);
                 int y = rand.Next(50, ClientSize.Height - 100);
 
@@ -188,7 +233,11 @@ namespace FiguresHierarchyUI
                     case 3:
                         double b = rand.NextDouble() * 80 + 30;
                         double h = rand.NextDouble() * 80 + 30;
-                        figures.Add(new Triangle(new PointF(x, y), b, h));
+                        figures.Add(new IsoscelesTriangle(new PointF(x, y), b, h));
+                        break;
+                    case 4:
+                        double l = rand.NextDouble() * 80 + 30;
+                        figures.Add(new EquilateralTriange(new PointF(x, y), l));
                         break;
                 }
                 Label label = new Label
