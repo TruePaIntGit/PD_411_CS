@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BinaryTreeProject
 {
@@ -143,6 +144,73 @@ namespace BinaryTreeProject
                 InOrderTraversal(node.Right);
             }
         }
+
+        private void InOrderToList(Node node, List<int> list)
+        {
+            if (node != null)
+            {
+                InOrderToList(node.Left, list);
+                list.Add(node.Value);
+                InOrderToList(node.Right, list);
+            }
+        }
+
+        private Node BuildBalancedTree(List<int> values, int start, int end)
+        {
+            if (start > end)
+                return null;
+
+            int mid = (start + end) / 2;
+            Node node = new Node(values[mid]);
+
+            node.Left = BuildBalancedTree(values, start, mid - 1);
+            node.Right = BuildBalancedTree(values, mid + 1, end);
+
+            return node;
+        }
+
+        // Балансировка дерева
+        public void Balance()
+        {
+            List<int> values = new List<int>();
+            InOrderToList(root, values);
+
+            root = BuildBalancedTree(values, 0, values.Count - 1);
+        }
+
+        // Графическое представление дерева с ветвями и узлами
+        public void PrintTree()
+        {
+            if (root == null)
+            {
+                Console.WriteLine("Дерево пустое.");
+                return;
+            }
+
+            PrintTreeRec(root, "", "", true);
+        }
+
+        private void PrintTreeRec(Node node, string indent, string prefix, bool isTail)
+        {
+            if (node != null)
+            {
+                Console.Write(indent);
+                Console.Write(isTail ? "└── " : "├── ");
+                Console.WriteLine(prefix + node.Value);
+
+                string newIndent = indent + (isTail ? "    " : "│   ");
+
+                if (node.Right != null)
+                {
+                    PrintTreeRec(node.Right, newIndent, "R: ", node.Left == null);
+                }
+
+                if (node.Left != null)
+                {
+                    PrintTreeRec(node.Left, newIndent, "L: ", true);
+                }
+            }
+        }
     }
 
     class Program
@@ -157,22 +225,30 @@ namespace BinaryTreeProject
             tree.Insert(40);
             tree.Insert(70);
             tree.Insert(60);
-            tree.Insert(80);
+            tree.Insert(51);
 
             Console.WriteLine("In-order обход дерева:");
-            tree.PrintInOrder(); // 20 30 40 50 60 70 80
+            tree.PrintInOrder(); // 20 30 40 50 51 60 70
 
             Console.WriteLine("Минимум: " + tree.Min()); // 20
-            Console.WriteLine("Максимум: " + tree.Max()); // 80
-            Console.WriteLine("Глубина дерева: " + tree.Depth()); // 3 или 4, зависит от структуры
+            Console.WriteLine("Максимум: " + tree.Max()); // 70
+            Console.WriteLine("Глубина дерева: " + tree.Depth()); // 4
+
+
+            Console.WriteLine("Глубина до балансировки: " + tree.Depth());
+            tree.PrintTree();
+            tree.Balance();
+            Console.WriteLine("Глубина после балансировки: " + tree.Depth());
+            tree.PrintTree();
 
             Console.WriteLine("Удаляем 20");
             tree.Erase(20);
-            tree.PrintInOrder(); // 30 40 50 60 70 80
+            tree.PrintInOrder(); // 30 40 50 51 60 70
 
             Console.WriteLine("Очищаем дерево");
             tree.Clear();
             tree.PrintInOrder(); // Пусто
+
         }
     }
 }
